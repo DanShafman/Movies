@@ -1,0 +1,6 @@
+framework module Pods_MoviesTable {
+  umbrella header "Pods-MoviesTable-umbrella.h"
+
+  export *
+  module * { export * }
+}
