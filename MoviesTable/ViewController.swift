@@ -6,12 +6,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBOutlet
     var tableView: UITableView!
-    var items: [String] = ["Movie0", "Movie1", "Movie2", "Movie3"]
-    var movieResponse: AnyObject?
-    var movieData: NSData?
     var movieArray = [Double]()
     var cell = UITableViewCell()
-    var json: JSON!
+    var json = JSON(data: NSData())
+    var arraySize: Int = 0
+    var size: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,9 +18,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
-    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20;
+        return 20
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -30,34 +28,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    }
-    
-    func sortByPopularity() {
         
     }
     
     func getMovies() {
         Alamofire.request(.GET, "https://api.themoviedb.org/3/discover/movie", parameters: ["sort_by" : "popularity", "api_key" : "08b5d2ec7ac05e1a512f2152954d31f2"])
-        .validate()
-        .responseJSON { response in
-        switch response.result {
-            case .Success:
-                self.json = JSON(response.result.value!)
-                print(self.findMovieByPopularity(1.000826))
-                let arraySize: Int = self.json["results"].count
-                for num in 0...arraySize - 1 {
-                    let x = self.json["results"][num]["popularity"]
-                    self.movieArray.append(x.double!)
+            .validate()
+            .responseJSON { response in
+                switch response.result {
+                case .Success:
+                    self.json = JSON(response.result.value!)
+                    self.arraySize = self.json["results"].count
+                    for num in 0...self.arraySize - 1 {
+                        let x = self.json["results"][num]["popularity"]
+                        self.movieArray.append(x.double!)
+                    }
                     self.movieArray.sortInPlace()
+                    for num in 0...self.arraySize - 1 {
+                        let path = NSIndexPath(forRow: num, inSection: 0)
+                        let cell = self.tableView.cellForRowAtIndexPath(path)
+                        cell?.textLabel?.text = (self.findMovieByPopularity(self.movieArray[num]) + ":    " + String(self.movieArray[num]))
+                    }
+                case .Failure(let error):
+                    print(error)
                 }
-                for num in 0...arraySize - 1 {
-                    let path = NSIndexPath(forRow: num, inSection: 0)
-                    let cell = self.tableView.cellForRowAtIndexPath(path)
-                    cell?.textLabel?.text = (self.findMovieByPopularity(self.movieArray[num]) + ":    " + String(self.movieArray[num]))
-                }
-            case .Failure(let error):
-                print(error)
-            }
         }
     }
     
