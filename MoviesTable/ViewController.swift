@@ -47,7 +47,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     for num in 0...self.arraySize - 1 {
                         let path = NSIndexPath(forRow: num, inSection: 0)
                         let cell = self.tableView.cellForRowAtIndexPath(path)
-                        cell?.textLabel?.text = (self.findMovieByPopularity(self.movieArray[num]) + ":    " + String(self.movieArray[num]))
+                        cell?.textLabel?.text = (self
+                            .findMovieByPopularity(self.movieArray[num]) + ":    " + String(self.movieArray[num]))
                     }
                 case .Failure(let error):
                     print(error)
